@@ -1,12 +1,17 @@
-# sudo: required
-# services: -docker
+sudo: required
+services: -docker
 
-# before_install: -docker build -t elliotgonzalez/react-multi-test -f ./client/Dockerfile.dev ./client
+before_install: -docker build -t elliotgonzalez/react-multi-test -f ./client/Dockerfile.dev ./client
 
-# script: -docker run -e CI=true elliotgonzalez/react-multi-test npm test
+script: -docker run -e CI=true elliotgonzalez/react-multi-test npm test
 
-# after_success:
-#   - docker build -t elliotgonzalez/multi-client ./client
-#   - docker build -t elliotgonzalez/multi-nginx ./nginx
-#   - docker build -t elliotgonzalez/multi-server ./server
-#   - docker build -t elliotgonzalez/multi-worker ./worker
+after_success:
+  - docker build -t elliotgonzalez/multi-client ./client
+  - docker build -t elliotgonzalez/multi-nginx ./nginx
+  - docker build -t elliotgonzalez/multi-server ./server
+  - docker build -t elliotgonzalez/multi-worker ./worker
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push elliotgonzalez/multi-client
+  - docker push elliotgonzalez/multi-nginx
+  - docker push elliotgonzalez/multi-server
+  - docker push elliotgonzalez/multi-worker
